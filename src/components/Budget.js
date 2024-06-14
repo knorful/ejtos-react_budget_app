@@ -1,15 +1,33 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 
 const Budget = () => {
-  const { budget } = useContext(AppContext);
+  const { budget, currency, dispatch, totalExpenses } = useContext(AppContext);
   const [newBudget, setNewBudget] = useState(budget);
   const handleBudgetChange = (event) => {
-    setNewBudget(event.target.value);
+    const newBudget = Number(event.target.value);
+
+    if (newBudget > 20000) {
+      alert("The upper limit is set to 20000");
+      setNewBudget(20000);
+    } else if (newBudget < totalExpenses) {
+      alert("Budget must be greater than or equal to the total expenses.");
+      setNewBudget(totalExpenses);
+    } else {
+      setNewBudget(newBudget);
+    }
   };
+
+  useEffect(() => {
+    dispatch({
+      type: "SET_BUDGET",
+      payload: newBudget,
+    });
+  }, [newBudget, dispatch]);
+
   return (
     <div className="alert alert-secondary">
-      <span>Budget: £{budget}</span>
+      <span>Budget: {currency}</span>
       <input
         type="number"
         step="10"
